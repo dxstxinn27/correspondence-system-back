@@ -3,11 +3,12 @@ from django.http import Http404
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
 from rest_framework import status
 
-from MyApps.logistics.models import Transport, Route, Service, RouteTransport
-from MyApps.logistics.serializers import TransportSerializer, RouteSerializer, ServiceSerializer, RouteTransportSerializer
+from MyApps.logistics.models import Transport, Route, Service
+from MyApps.logistics.serializers import TransportSerializer, RouteSerializer, ServiceSerializer
 
 # Create your views here.
 
@@ -36,23 +37,23 @@ def transport_detail(request, pk):
     Retrieve, update or delete a code snippet.
     """
     try:
-        transports = Transport.objects.get(pk=pk)
+        transport = Transport.objects.get(pk=pk)
     except Transport.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TransportSerializer(transports)
+        serializer = TransportSerializer(transport)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = TransportSerializer(transports, data=request.data)
+        serializer = TransportSerializer(transport, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        transports.delete()
+        transport.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
@@ -79,23 +80,23 @@ def route_detail(request, pk):
     Retrieve, update or delete a code snippet.
     """
     try:
-        routes = Route.objects.get(pk=pk)
+        route = Route.objects.get(pk=pk)
     except Route.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = RouteSerializer(routes)
+        serializer = RouteSerializer(route)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = RouteSerializer(routes, data=request.data)
+        serializer = RouteSerializer(route, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        routes.delete()
+        route.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
@@ -122,64 +123,63 @@ def service_detail(request, pk):
     Retrieve, update or delete a code snippet.
     """
     try:
-        services = ServiceSerializer.objects.get(pk=pk)
-    except Transport.DoesNotExist:
+        service = Service.objects.get(pk=pk)
+    except Service.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TransportSerializer(services)
+        serializer = ServiceSerializer(service)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ServiceSerializer(services, data=request.data)
+        serializer = ServiceSerializer(service, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        services.delete()
+        service.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET', 'POST'])
-def routeTransport_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        routeTransports = RouteTransport.objects.all()
-        serializer = RouteTransportSerializer(routeTransports, many=True)
-        return Response(serializer.data)
+# class RouteTransportList(APIView):
+#     def get(self, request, format=None):
+#         routeTransports = RouteTransport.objects.all()
+#         serializer = RouteTransportSerializer(routeTransports, many=True)
+#         return Response({"Routes - Transports": serializer.data})
 
-    elif request.method == 'POST':
-        serializer = RouteTransportSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, format=None):
+#         serializer = RouteTransportSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def routeTransport_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
-    try:
-        routeTransports = RouteTransport.objects.get(pk=pk)
-    except RouteTransport.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+# class RouteTransportDetail(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return RouteTransport.objects.get(pk=pk)
+#         except RouteTransport.DoesNotExist:
+#             raise Http404
 
-    if request.method == 'GET':
-        serializer = TransportSerializer(routeTransports)
-        return Response(serializer.data)
+#     def get(self, request, pk, format=None):
+#         routeTransport = self.get_object(pk)
+#         serializer = RouteTransportSerializer(routeTransport)
+#         return Response({"route - transport": serializer.data})
 
-    elif request.method == 'PUT':
-        serializer = RouteTransportSerializer(routeTransports, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, pk, format=None):
+#         routeTransport = self.get_object(pk)
+#         serializer = RouteTransportSerializer(routeTransport, data=request.data)  
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        routeTransports.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def patch(self, request, pk, format=None):
+#         routeTransport = self.get_object(pk)
+#         serializer = RouteTransportSerializer(routeTransport, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

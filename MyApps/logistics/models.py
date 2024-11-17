@@ -14,7 +14,7 @@ class Transport(models.Model):
     capacity = models.IntegerField(verbose_name="capacity")
 
     def __str__(self):
-        return self.transportation
+        return f'{self.transportation} -> {self.capacity}'
 
     class Meta:
         verbose_name = "transport"
@@ -24,7 +24,7 @@ class Route(models.Model):
     origin = models.CharField(max_length=50, verbose_name="origin")
     destination = models.CharField(max_length=50, verbose_name="destination")
     stops = models.CharField(max_length=50, blank=True, null=True, verbose_name="stops")
-    transport = models.ManyToManyField(Transport, through='RouteTransport', verbose_name='RouteTransport')
+    transport = models.ForeignKey(Transport, on_delete=models.CASCADE, verbose_name='Transport')
 
     def __str__(self):
         return f'{self.origin} -> {self.destination}'
@@ -49,6 +49,6 @@ class Service(models.Model):
         verbose_name = "service"
         verbose_name_plural = "services"
 
-class RouteTransport(models.Model):
-    route = models.ForeignKey(Route, on_delete=models.CASCADE, verbose_name="route")
-    transport = models.ForeignKey(Transport, on_delete=models.CASCADE, verbose_name="transport")
+# class RouteTransport(models.Model):
+#     route = models.ForeignKey(Route, on_delete=models.CASCADE, verbose_name="route")
+#     transport = models.ForeignKey(Transport, on_delete=models.CASCADE, verbose_name="transport")
